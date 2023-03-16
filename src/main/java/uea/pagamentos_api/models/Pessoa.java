@@ -92,4 +92,8 @@ public class Pessoa implements Serializable {
 		return Objects.equals(codigo, other.codigo);
 	}
 
+	public boolean isAtivo() {
+		return this.ativo;
+	}
+
 }

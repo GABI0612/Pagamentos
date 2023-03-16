@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import jakarta.servlet.http.HttpServletRequest;
-import uea.pagamentos_api.services.PessoaInativaException;
+import uea.pagamentos_api.services.exceptions.PessoaInativaException;
 
 @ControllerAdvice
 public class ResourceExceptionHandler {

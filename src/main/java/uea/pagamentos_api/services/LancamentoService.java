@@ -6,12 +6,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import uea.pagamentos_api.models.Categoria;
 import uea.pagamentos_api.models.Lancamento;
 import uea.pagamentos_api.models.Pessoa;
 import uea.pagamentos_api.repositories.CategoriaRepository;
 import uea.pagamentos_api.repositories.LancamentoRepository;
 import uea.pagamentos_api.repositories.PessoaRepository;
+import uea.pagamentos_api.services.exceptions.PessoaInativaException;
 
 @Service
 public class LancamentoService {
@@ -25,14 +25,14 @@ public class LancamentoService {
 	@Autowired
 	private CategoriaRepository categoriaRepository;
 	
+	@Autowired
+	private PessoaService pessoaService;
+	
 	public Lancamento criar(Lancamento lancamento) {
-		Pessoa pessoa = pessoaRepository.findById(
-				lancamento.getPessoa().getCodigo()).orElseThrow();
-		if(!pessoa.getAtivo()) {
-			throw new PessoaInativaException(pessoa.getCodigo());
+		Pessoa pessoaSalva = pessoaService.buscarPorCodigo(lancamento.getPessoa().getCodigo());
+		if (!pessoaSalva.isAtivo()) {
+			throw new PessoaInativaException(pessoaSalva.getCodigo());
 		}
-		Categoria categoria = categoriaRepository.findById(
-				lancamento.getCategoria().getCodigo()).orElseThrow();
 		return lancamentoRepository.save(lancamento);
 	}
 	
