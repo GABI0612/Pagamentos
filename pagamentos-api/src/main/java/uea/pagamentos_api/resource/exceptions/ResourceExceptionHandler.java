@@ -1,5 +1,4 @@
 package uea.pagamentos_api.resource.exceptions;
-
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import jakarta.servlet.http.HttpServletRequest;
+import uea.pagamentos_api.services.PessoaInativaException;
 
 @ControllerAdvice
 public class ResourceExceptionHandler {
@@ -46,6 +46,17 @@ public class ResourceExceptionHandler {
 		StandardError err = new StandardError(Instant.now(), status.value(), erros, e.getMessage(),
 				request.getRequestURI());
 
+		return ResponseEntity.status(status).body(err);
+	}
+	
+	@ExceptionHandler(PessoaInativaException.class)
+	public ResponseEntity<StandardError> pessoaInativaException(PessoaInativaException e,
+			HttpServletRequest resquest) {
+		List<String> errors = Arrays
+				.asList(messageSource.getMessage("pessoa.inativa", null, LocaleContextHolder.getLocale()));
+		HttpStatus status = HttpStatus.NOT_FOUND;
+		StandardError err = new StandardError(Instant.now(), status.value(), errors, e.getMessage(),
+				resquest.getRequestURI());
 		return ResponseEntity.status(status).body(err);
 	}
 

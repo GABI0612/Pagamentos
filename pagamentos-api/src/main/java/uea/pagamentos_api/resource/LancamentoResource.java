@@ -1,5 +1,4 @@
 package uea.pagamentos_api.resource;
-
 import java.net.URI;
 import java.util.List;
 
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import jakarta.validation.Valid;
 import uea.pagamentos_api.models.Lancamento;
 import uea.pagamentos_api.services.LancamentoService;
 
@@ -26,7 +26,7 @@ public class LancamentoResource {
 	private LancamentoService lancamentoService;
 
 	@PostMapping
-	public ResponseEntity<Lancamento> criar(@RequestBody Lancamento lancamento) {
+	public ResponseEntity<Lancamento> criar(@Valid @RequestBody Lancamento lancamento) {
 		Lancamento lancamentoSalva = lancamentoService.criar(lancamento);
 
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{codigo}")
@@ -54,7 +54,7 @@ public class LancamentoResource {
 	}
 
 	@PutMapping(value = "/{codigo}")
-	public ResponseEntity<Lancamento> atualizar(@PathVariable Long codigo, @RequestBody Lancamento lancamento) {
+	public ResponseEntity<Lancamento> atualizar(@PathVariable Long codigo, @Valid @RequestBody Lancamento lancamento) {
 		Lancamento lancamentoSalva = lancamentoService.atualizar(codigo, lancamento);
 		return ResponseEntity.ok().body(lancamentoSalva);
 
