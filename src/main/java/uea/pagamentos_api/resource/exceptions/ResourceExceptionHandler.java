@@ -1,4 +1,5 @@
 package uea.pagamentos_api.resource.exceptions;
+
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -51,12 +52,15 @@ public class ResourceExceptionHandler {
 	
 	@ExceptionHandler(PessoaInativaException.class)
 	public ResponseEntity<StandardError> pessoaInativaException(PessoaInativaException e,
-			HttpServletRequest resquest) {
-		List<String> errors = Arrays
-				.asList(messageSource.getMessage("pessoa.inativa", null, LocaleContextHolder.getLocale()));
-		HttpStatus status = HttpStatus.NOT_FOUND;
-		StandardError err = new StandardError(Instant.now(), status.value(), errors, e.getMessage(),
-				resquest.getRequestURI());
+			HttpServletRequest request) {
+
+		List<String> erros = Arrays
+				.asList(messageSource.getMessage("mensagem.pessoa.inativa", null, LocaleContextHolder.getLocale()));
+		HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
+
+		StandardError err = new StandardError(Instant.now(), status.value(), erros, e.getMessage(),
+				request.getRequestURI());
+
 		return ResponseEntity.status(status).body(err);
 	}
 

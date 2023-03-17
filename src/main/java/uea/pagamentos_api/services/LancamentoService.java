@@ -6,11 +6,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import uea.pagamentos_api.dto.ResumoLancamentoDto;
+import uea.pagamentos_api.models.Categoria;
 import uea.pagamentos_api.models.Lancamento;
 import uea.pagamentos_api.models.Pessoa;
 import uea.pagamentos_api.repositories.CategoriaRepository;
 import uea.pagamentos_api.repositories.LancamentoRepository;
 import uea.pagamentos_api.repositories.PessoaRepository;
+import uea.pagamentos_api.repositories.filters.LancamentoFilter;
 import uea.pagamentos_api.services.exceptions.PessoaInativaException;
 
 @Service
@@ -25,17 +28,20 @@ public class LancamentoService {
 	@Autowired
 	private CategoriaRepository categoriaRepository;
 	
-	@Autowired
-	private PessoaService pessoaService;
-	
-	public Lancamento criar(Lancamento lancamento) {
-		Pessoa pessoaSalva = pessoaService.buscarPorCodigo(lancamento.getPessoa().getCodigo());
-		if (!pessoaSalva.isAtivo()) {
-			throw new PessoaInativaException(pessoaSalva.getCodigo());
-		}
-		return lancamentoRepository.save(lancamento);
+	public List<ResumoLancamentoDto> resumir(LancamentoFilter lancamentoFilter){
+		return lancamentoRepository.filtrar(lancamentoFilter);
 	}
 	
+	public Lancamento criar(Lancamento lancamento) {
+		Pessoa pessoa = pessoaRepository.findById(
+				lancamento.getPessoa().getCodigo()).orElseThrow();
+		if(!pessoa.isAtivo()) {
+			throw new PessoaInativaException();
+		}
+		Categoria categoria = categoriaRepository.findById(
+				lancamento.getCategoria().getCodigo()).orElseThrow();
+		return lancamentoRepository.save(lancamento);
+	}
 	
 	public List<Lancamento> listar(){
 		return lancamentoRepository.findAll();
@@ -51,15 +57,18 @@ public class LancamentoService {
 	}
 	
 	public Lancamento atualizar(Long codigo, Lancamento lancamento) {
-		Lancamento lancamentoSalva = lancamentoRepository.
+		Lancamento lancamentoSalvo = lancamentoRepository.
 				findById(codigo).orElseThrow();
-		BeanUtils.copyProperties(lancamento, lancamentoSalva, "codigo");
 		Pessoa pessoa = pessoaRepository.findById(
 				lancamento.getPessoa().getCodigo()).orElseThrow();
-		if(!pessoa.getAtivo()) {
-			throw new PessoaInativaException(pessoa.getCodigo());
+		if(!pessoa.isAtivo()) {
+			throw new PessoaInativaException();
 		}
-		return lancamentoRepository.save(lancamentoSalva);
+		Categoria categoria = categoriaRepository.findById(
+				lancamento.getCategoria().getCodigo()).orElseThrow();
+		BeanUtils.copyProperties(lancamento, lancamentoSalvo, "codigo");
+		return lancamentoRepository.save(lancamentoSalvo);
 	}
+	
 
 }
