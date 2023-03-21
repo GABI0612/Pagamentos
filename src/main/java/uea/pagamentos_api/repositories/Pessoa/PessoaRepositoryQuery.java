@@ -7,6 +7,7 @@ import uea.pagamentos_api.models.Pessoa;
 import uea.pagamentos_api.repositories.filters.PessoaFilter;
 
 public interface PessoaRepositoryQuery {
-	public Page<Pessoa> filtrar(PessoaFilter pessoaFilter, Pageable pageable);
+	public Page<Pessoa> filtrar(
+			PessoaFilter pessoaFilter, Pageable pageable);
 
 }
